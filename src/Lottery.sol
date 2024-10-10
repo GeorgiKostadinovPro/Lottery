@@ -10,11 +10,24 @@ pragma solidity 0.8.19;
 contract Lottery {
     /**
         Erros
-     */
-    error NotEnoughEthToEnterLottery();
+    */
+    error Lottery__NotEnoughEthToEnterLottery();
 
+    /**
+        State Variables
+    */
     uint256 private immutable i_entrancePrice;
 
+    address payable[] private s_participants;
+
+    /**
+        Events
+    */
+    event EnterLottery(address indexed participant);
+
+    /**
+        Functions
+    */
     constructor(uint256 _entrancePrice) {
         i_entrancePrice = _entrancePrice;
     }
@@ -23,7 +36,14 @@ contract Lottery {
 
     fallback() external payable {}
 
-    function enterLottery() public payable {}
+    function enterLottery() public payable {
+        if (msg.value < i_entrancePrice) {
+            revert Lottery__NotEnoughEthToEnterLottery();
+        }
+
+        s_participants.push(payable(msg.sender));
+        emit EnterLottery(msg.sender);
+    }
 
     function pickWinner() public {}
 
