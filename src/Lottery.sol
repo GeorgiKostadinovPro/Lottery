@@ -16,6 +16,7 @@ contract Lottery is VRFConsumerBaseV2Plus {
     */
     error Lottery__NotEnoughEthToEnterLottery();
     error Lottery__NotEnoughTimePassedToPickWinner();
+    error Lottery__UnsuccessfulRewardTranfer();
 
     /**
         State Variables
@@ -93,7 +94,15 @@ contract Lottery is VRFConsumerBaseV2Plus {
     function fulfillRandomWords(
         uint256 requestId,
         uint[] calldata randomWords
-    ) internal override {}
+    ) internal override {
+        uint256 winnerIndex = randomWords[0] % s_participants.length;
+        address payable winner = s_participants[winnerIndex];
+        (bool success, ) = winner.call{value: address(this).balance}("");
+
+        if (!success) {
+            revert Lottery__UnsuccessfulRewardTranfer();
+        }
+    }
 
     /** 
         View / Pure functions 
