@@ -107,12 +107,13 @@ contract Lottery is VRFConsumerBaseV2Plus {
         s_lastTimeWinnerPicked = block.timestamp;
         s_participants = new address payable[](0);
 
+        emit ChosenWinner(winner);
+
         (bool success, ) = winner.call{value: address(this).balance}("");
+
         if (!success) {
             revert Lottery__UnsuccessfulRewardTranfer();
         }
-
-        emit ChosenWinner(winner);
     }
 
     function getEntrancePrice() external view returns (uint256) {
