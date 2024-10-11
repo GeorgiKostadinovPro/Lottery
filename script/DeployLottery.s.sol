@@ -6,7 +6,7 @@ import {Lottery} from "../src/Lottery.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
 
 contract DeployLottery is Script {
-    function deployLottery() private returns (Lottery, HelperConfig) {
+    function deployLottery() public returns (Lottery, HelperConfig) {
         HelperConfig helperConfig = new HelperConfig();
         HelperConfig.NetworkConfig memory config = helperConfig.getConfig();
 
