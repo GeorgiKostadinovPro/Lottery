@@ -74,8 +74,38 @@ contract Lottery is VRFConsumerBaseV2Plus {
         emit EnterLottery(msg.sender);
     }
 
-    function chooseWinner() external {
-        if ((block.timestamp - s_lastTimeWinnerPicked) < i_lotteryDuration) {
+    /**
+     * @dev A function that the Chainlink nodes will consistently call to see whether the lottery is ready to choose a winner.
+     * For the upkeepNeeded to be true, the following should be true:
+     * 1. The time interval has passed between lottery runs.
+     * 2. The lottery is OPEN.
+     * 3. The contract contains ETH.
+     * 4. Implicitly, your subscription has LINK.
+     * @param - ignored for the context of simplicity.
+     * @return upkeepNeeded - true if it's time to restart the lottery.
+     * @return - ignored for the context of simplicity.
+     */
+    function checkUpkeep(
+        bytes memory /*check data*/
+    ) public view returns (bool upkeepNeeded, bytes memory /* perform data */) {
+        bool timeHasPassed = ((block.timestamp - s_lastTimeWinnerPicked) >=
+            i_lotteryDuration);
+        bool isOpen = s_lotteryState == LotteryState.OPEN;
+        bool hasETH = address(this).balance > 0;
+        bool hasParticipants = s_participants.length > 0;
+
+        upkeepNeeded = timeHasPassed && isOpen && hasETH && hasParticipants;
+
+        return (upkeepNeeded, "");
+    }
+
+    /**
+     * @dev Chainlink Automation will call performUpkeep
+     */
+    function performUpkeep(bytes calldata /* perform data */) external {
+        (bool upkeepNeeded, ) = checkUpkeep("");
+
+        if (!upkeepNeeded) {
             revert Lottery__NotEnoughTimePassedToPickWinner();
         }
 
