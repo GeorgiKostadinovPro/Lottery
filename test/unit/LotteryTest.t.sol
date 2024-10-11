@@ -20,6 +20,9 @@ contract LotteryTest is Test {
     uint256 private subscriptionId;
     uint32 private callbackGasLimit;
 
+    event EnterLottery(address indexed participant);
+    event ChosenWinner(address indexed winner);
+
     function setUp() external {
         DeployLottery deployer = new DeployLottery();
         (lottery, helperConfig) = deployer.deployLottery();
@@ -50,5 +53,26 @@ contract LotteryTest is Test {
         lottery.enterLottery{value: entrancePrice}();
 
         assert(lottery.getParticipants().length == 1);
+    }
+
+    function testEmitEventAfterEnteringLottery() public {
+        vm.prank(USER);
+        vm.expectEmit(true, false, false, false, address(lottery));
+        emit EnterLottery(USER);
+        lottery.enterLottery{value: entrancePrice}();
+    }
+
+    function testDontAllowUsersToEnterWhileLotteryIsChoosingWinner() public {
+        vm.prank(USER);
+        lottery.enterLottery{value: entrancePrice}();
+        vm.warp(block.timestamp + lotteryDuration + 1);
+        vm.roll(block.number + 1);
+        lottery.performUpkeep("");
+
+        vm.prank(USER);
+        vm.expectRevert(
+            Lottery.Lottery__NotEnoughTimePassedToPickWinner.selector
+        );
+        lottery.enterLottery{value: entrancePrice}();
     }
 }

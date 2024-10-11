@@ -10,6 +10,8 @@ contract DeployLottery is Script {
         HelperConfig helperConfig = new HelperConfig();
         HelperConfig.NetworkConfig memory config = helperConfig.getConfig();
 
+        if (config.subscriptionId == 0) {}
+
         vm.startBroadcast();
         Lottery lottery = new Lottery(
             config.entrancePrice,
