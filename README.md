@@ -8,9 +8,11 @@
 
 <ul>
     <strong>Important:</strong>
-    <li>This is an education project only, not real ether or private keys are used.</li>
+    <li>Not real ether or private keys are used.</li>
     <li>This project can be deployed both to an in-memory local blockchain like Anvil or Sepolia Testnet.</li>
     <li>If you want to use Sepolia Testnet or any other, you have to make an account and use your api keys.</li>
+    <li>If you want to test with Sepolia you have to have some Sepolia Test Eth which can be aquired from a Faucet.</li>
+    <li>Anvil would be easier to test with since it is a local Ethereum node provided by Foundry.</li>
 </ul>
 
 <p></p>
