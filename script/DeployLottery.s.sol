@@ -4,7 +4,7 @@ pragma solidity 0.8.19;
 import {Script} from "forge-std/Script.sol";
 import {Lottery} from "../src/Lottery.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
-import {CreateSubscription} from "./Interactions.s.sol";
+import {CreateSubscription, FundSubscription, AddConsumer} from "./Interactions.s.sol";
 
 contract DeployLottery is Script {
     function deployLottery() public returns (Lottery, HelperConfig) {
@@ -14,10 +14,18 @@ contract DeployLottery is Script {
         if (config.subscriptionId == 0) {
             CreateSubscription createSubScript = new CreateSubscription();
             (config.subscriptionId, config.vrfCoordinator) = createSubScript
-                .createSubscription(config.vrfCoordinator);
+                .createSubscription(config.vrfCoordinator, config.account);
+
+            FundSubscription fundSubScript = new FundSubscription();
+            fundSubScript.fundSubscription(
+                config.vrfCoordinator,
+                config.subscriptionId,
+                config.link,
+                config.account
+            );
         }
 
-        vm.startBroadcast();
+        vm.startBroadcast(config.account);
         Lottery lottery = new Lottery(
             config.entrancePrice,
             config.lotteryDuration,
@@ -28,8 +36,18 @@ contract DeployLottery is Script {
         );
         vm.stopBroadcast();
 
+        AddConsumer addConsumerScript = new AddConsumer();
+        addConsumerScript.addConsumer(
+            address(lottery),
+            config.vrfCoordinator,
+            config.subscriptionId,
+            config.account
+        );
+
         return (lottery, helperConfig);
     }
 
-    function run() external {}
+    function run() external {
+        deployLottery();
+    }
 }

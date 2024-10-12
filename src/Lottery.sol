@@ -12,7 +12,7 @@ import {VRFV2PlusClient} from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/V
  */
 contract Lottery is VRFConsumerBaseV2Plus {
     error Lottery__NotEnoughEthToEnterLottery();
-    error Lottery__NotEnoughTimePassedToPickWinner();
+    error Lottery__NotValidCheckUpkeep();
     error Lottery__UnsuccessfulRewardTranfer();
     error Lottery__ChoosingWinner();
 
@@ -30,6 +30,7 @@ contract Lottery is VRFConsumerBaseV2Plus {
     uint256 private immutable i_subscriptionId;
     uint32 private immutable i_callbackGasLimit;
 
+    address private s_recentWinner;
     uint256 private s_lastTimeWinnerPicked;
     address payable[] private s_participants;
 
@@ -37,6 +38,7 @@ contract Lottery is VRFConsumerBaseV2Plus {
 
     event EnterLottery(address indexed participant);
     event ChosenWinner(address indexed winner);
+    event RequestWinner(uint256 indexed requestId);
 
     constructor(
         uint256 _entrancePrice,
@@ -106,7 +108,7 @@ contract Lottery is VRFConsumerBaseV2Plus {
         (bool upkeepNeeded, ) = checkUpkeep("");
 
         if (!upkeepNeeded) {
-            revert Lottery__NotEnoughTimePassedToPickWinner();
+            revert Lottery__NotValidCheckUpkeep();
         }
 
         s_lotteryState = LotteryState.CHOOSING_WINNER;
@@ -124,16 +126,19 @@ contract Lottery is VRFConsumerBaseV2Plus {
                 )
             })
         );
+
+        emit RequestWinner(requestId);
     }
 
     function fulfillRandomWords(
-        uint256 requestId,
+        uint256 /*requestId*/,
         uint[] calldata randomWords
     ) internal override {
         uint256 winnerIndex = randomWords[0] % s_participants.length;
         address payable winner = s_participants[winnerIndex];
 
         s_lotteryState = LotteryState.OPEN;
+        s_recentWinner = winner;
         s_lastTimeWinnerPicked = block.timestamp;
         s_participants = new address payable[](0);
 
@@ -152,6 +157,14 @@ contract Lottery is VRFConsumerBaseV2Plus {
 
     function getLotteryState() external view returns (LotteryState) {
         return s_lotteryState;
+    }
+
+    function getRecentWinner() external view returns (address) {
+        return s_recentWinner;
+    }
+
+    function getLastTimeWinnerPicked() external view returns (uint256) {
+        return s_lastTimeWinnerPicked;
     }
 
     function getParticipants()

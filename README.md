@@ -10,8 +10,9 @@
     <strong>Important:</strong>
     <li>Not real ether or private keys are used.</li>
     <li>This project can be deployed both to an in-memory local blockchain like Anvil or Sepolia Testnet.</li>
-    <li>If you want to use Sepolia Testnet or any other, you have to make an account and use your api keys.</li>
-    <li>If you want to test with Sepolia you have to have some Sepolia Test Eth which can be aquired from a Faucet.</li>
+    <li>If you want to use Sepolia Testnet or any other, you have to make an account and use your keys to sign transactions.</li>
+    <li>To use Sepolia you have to have some Sepolia Test Eth which can be aquired from a Faucet.</li>
+    <li>For Sepolia you would also need to create an account subscription in Chainlink to have valid ids.</li>
     <li>Anvil would be easier to test with since it is a local Ethereum node provided by Foundry.</li>
 </ul>
 
@@ -85,26 +86,14 @@ $ anvil
 ### Deploy
 
 ```shell
-$ forge script script/DeployFundMe.s.sol --rpc-url <your_rpc_url> --private-key <your_private_key>
+$ forge script script/DeployLottery.s.sol --rpc-url <your_rpc_url> --private-key <your_private_key>
 ```
 
-<p>--rpc-url - either Anvil url or actual test network url like Sepolia.</p>
-<p>--private-key - the same goes for the private keys.</p>
+<p>--rpc-url: either Anvil url or actual test network url like Sepolia.</p>
+<p>--private-key: the same goes for the private keys.</p>
 
-### Scripts
-
-```shell
-$ forge script script/Interactions.s.sol:Fund --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-```shell
-$ forge script script/Interactions.s.sol:Withdraw --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
+### Scripts 
+Review the <a href="./Makefile">Makefile</a> to easily interact with the project.
 
 ### Help
 

@@ -16,6 +16,7 @@ contract HelperConfig is Script {
         uint256 subscriptionId;
         uint32 callbackGasLimit;
         address link;
+        address account;
     }
 
     uint256 private constant SEPOLIA_ETH_CHAIN_ID = 11155111;
@@ -51,6 +52,7 @@ contract HelperConfig is Script {
     /**
     * @dev The values for the NetworkConfig are not random.
     They are extracted from the Chainlink VRF, Automation and Link Configurations.
+    For personal testing you need to update them otherwise it won't work.
     */
     function getSepoliaEthConfig() public pure returns (NetworkConfig memory) {
         return
@@ -59,9 +61,10 @@ contract HelperConfig is Script {
                 lotteryDuration: 30,
                 vrfCoordinator: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B,
                 keyHash: 0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae,
-                subscriptionId: 0,
+                subscriptionId: 48541374653733865272584279265564192949889782835229662068260783679581612972928,
                 callbackGasLimit: 2500000,
-                link: 0x779877A7B0D9E8603169DdbD7836e478b4624789
+                link: 0x779877A7B0D9E8603169DdbD7836e478b4624789,
+                account: 0x643315C9Be056cDEA171F4e7b2222a4ddaB9F88D
             });
     }
 
@@ -86,7 +89,8 @@ contract HelperConfig is Script {
             keyHash: 0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae,
             subscriptionId: 0,
             callbackGasLimit: 2500000,
-            link: address(linkTokenMock)
+            link: address(linkTokenMock),
+            account: 0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38
         });
 
         return anvilNetworkConfig;

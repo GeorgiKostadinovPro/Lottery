@@ -5,20 +5,23 @@ import {Script} from "forge-std/Script.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
 import {VRFCoordinatorV2_5Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
 import {LinkToken} from "../test/mocks/LinkToken.sol";
+import {DevOpsTools} from "../lib/foundry-devops/src/DevOpsTools.sol";
 
 contract CreateSubscription is Script {
     function createSubscriptionUsingConfig() public returns (uint256, address) {
         HelperConfig helperConfig = new HelperConfig();
         address vrfCoordinator = helperConfig.getConfig().vrfCoordinator;
-        (uint256 subId, ) = createSubscription(vrfCoordinator);
+        address account = helperConfig.getConfig().account;
+        (uint256 subId, ) = createSubscription(vrfCoordinator, account);
 
         return (subId, vrfCoordinator);
     }
 
     function createSubscription(
-        address _vrfCoordinator
+        address _vrfCoordinator,
+        address _account
     ) public returns (uint256, address) {
-        vm.startBroadcast();
+        vm.startBroadcast(_account);
         uint256 subId = VRFCoordinatorV2_5Mock(_vrfCoordinator)
             .createSubscription();
         vm.stopBroadcast();
@@ -39,23 +42,25 @@ contract FundSubscription is Script {
         address vrfCoordinator = helperConfig.getConfig().vrfCoordinator;
         uint256 subscriptionId = helperConfig.getConfig().subscriptionId;
         address linkToken = helperConfig.getConfig().link;
-        fundSubscription(vrfCoordinator, subscriptionId, linkToken);
+        address account = helperConfig.getConfig().account;
+        fundSubscription(vrfCoordinator, subscriptionId, linkToken, account);
     }
 
     function fundSubscription(
         address _vrfCoordinator,
         uint256 _subscriptionId,
-        address _linkToken
+        address _linkToken,
+        address _account
     ) public {
         if (block.chainid == 31337) {
             vm.startBroadcast();
             VRFCoordinatorV2_5Mock(_vrfCoordinator).fundSubscription(
                 _subscriptionId,
-                FUND_AMOUNT
+                FUND_AMOUNT * 100
             );
             vm.stopBroadcast();
         } else {
-            vm.startBroadcast();
+            vm.startBroadcast(_account);
             LinkToken(_linkToken).transferAndCall(
                 _vrfCoordinator,
                 FUND_AMOUNT,
@@ -67,5 +72,42 @@ contract FundSubscription is Script {
 
     function run() public {
         fundSubscriptionUsingConfig();
+    }
+}
+
+contract AddConsumer is Script {
+    function addConsumerUsingConfig(address _mostRecentlyDeployed) public {
+        HelperConfig helperConfig = new HelperConfig();
+        address vrfCoordinator = helperConfig.getConfig().vrfCoordinator;
+        uint256 subscriptionId = helperConfig.getConfig().subscriptionId;
+        address account = helperConfig.getConfig().account;
+        addConsumer(
+            _mostRecentlyDeployed,
+            vrfCoordinator,
+            subscriptionId,
+            account
+        );
+    }
+
+    function addConsumer(
+        address _contractToAddToVrf,
+        address _vrfCoordinator,
+        uint256 _subId,
+        address _account
+    ) public {
+        vm.startBroadcast(_account);
+        VRFCoordinatorV2_5Mock(_vrfCoordinator).addConsumer(
+            _subId,
+            _contractToAddToVrf
+        );
+        vm.stopBroadcast();
+    }
+
+    function run() external {
+        address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment(
+            "Lottery",
+            block.chainid
+        );
+        addConsumerUsingConfig(mostRecentlyDeployed);
     }
 }
