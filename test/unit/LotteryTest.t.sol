@@ -33,6 +33,14 @@ contract LotteryTest is Test {
         _;
     }
 
+    modifier skipFork() {
+        if (block.chainid != 31337) {
+            return;
+        }
+
+        _;
+    }
+
     function setUp() external {
         DeployLottery deployer = new DeployLottery();
         (lottery, helperConfig) = deployer.deployLottery();
@@ -135,7 +143,7 @@ contract LotteryTest is Test {
 
     function testFulfillRandomWorldsCanOnlyBeCalledAfterPerformUpkeep(
         uint256 _randomRequestId
-    ) public enterLottery {
+    ) public skipFork enterLottery {
         vm.expectRevert(VRFCoordinatorV2_5Mock.InvalidRequest.selector);
         VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(
             _randomRequestId,
@@ -145,6 +153,7 @@ contract LotteryTest is Test {
 
     function testFulfillRandomWordsPicksAWinnerResetsAndSendsReward()
         public
+        skipFork
         enterLottery
     {
         address expectedWinner = address(1);
