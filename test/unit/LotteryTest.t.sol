@@ -70,9 +70,7 @@ contract LotteryTest is Test {
         lottery.performUpkeep("");
 
         vm.prank(USER);
-        vm.expectRevert(
-            Lottery.Lottery__NotEnoughTimePassedToPickWinner.selector
-        );
+        vm.expectRevert(Lottery.Lottery__ChoosingWinner.selector);
         lottery.enterLottery{value: entrancePrice}();
     }
 }

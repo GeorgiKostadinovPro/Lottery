@@ -10,8 +10,9 @@
     <strong>Important:</strong>
     <li>Not real ether or private keys are used.</li>
     <li>This project can be deployed both to an in-memory local blockchain like Anvil or Sepolia Testnet.</li>
-    <li>If you want to use Sepolia Testnet or any other, you have to make an account and use your api keys.</li>
-    <li>If you want to test with Sepolia you have to have some Sepolia Test Eth which can be aquired from a Faucet.</li>
+    <li>If you want to use Sepolia Testnet or any other, you have to make an account and use your keys to sign transactions.</li>
+    <li>To use Sepolia you have to have some Sepolia Test Eth which can be aquired from a Faucet.</li>
+    <li>For Sepolia you would also need to create an account subscription in Chainlink to have valid ids.</li>
     <li>Anvil would be easier to test with since it is a local Ethereum node provided by Foundry.</li>
 </ul>
 
