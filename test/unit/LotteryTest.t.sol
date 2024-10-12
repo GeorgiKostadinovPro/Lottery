@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
-import {Test, console} from "../../lib/forge-std/src/Test.sol";
+import {Test} from "../../lib/forge-std/src/Test.sol";
 import {Vm} from "../../lib/forge-std/src/Vm.sol";
 import {Lottery} from "../../src/Lottery.sol";
 import {DeployLottery} from "../../script/DeployLottery.s.sol";
