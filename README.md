@@ -50,7 +50,7 @@ https://book.getfoundry.sh/
 
 ### Clone
 ```shell
-$ git clone --recurse-submodules https://github.com/GeorgiKostadinovPro/Lottery
+$ git clone https://github.com/GeorgiKostadinovPro/Lottery
 ```
 
 ### Build
