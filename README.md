@@ -53,15 +53,6 @@ https://book.getfoundry.sh/
 $ git clone https://github.com/GeorgiKostadinovPro/Lottery
 ```
 
-### Deploy
-
-```shell
-$ forge script script/DeployLottery.s.sol --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-<p>--rpc-url: either Anvil url or actual test network url like Sepolia.</p>
-<p>--private-key: the same goes for the private keys.</p>
-
 ### Scripts 
 Review the <a href="./Makefile">Makefile</a> to easily interact with the project.
 
