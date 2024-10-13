@@ -13,7 +13,7 @@
     <li>If you want to use Sepolia Testnet or any other, you have to make an account and use your keys to sign transactions.</li>
     <li>To use Sepolia you have to have some Sepolia Test Eth which can be aquired from a Faucet.</li>
     <li>For Sepolia you would also need to create an account subscription in Chainlink to have valid ids.</li>
-    <li>To test with Anvil you can add it as a network on your Metamask account for the Settings tab.</li>
+    <li>To test with Anvil, first start it locally and then add it as a network on your Metamask account from the Settings tab.</li>
 </ul>
 
 <p></p>
